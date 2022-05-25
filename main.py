@@ -2,13 +2,21 @@ import argparse
 import pathlib
 from diff import diff
 from load_objects import load_objects_from_file
+from output import handleOutput
 
 
 def main(args):
     objs_1 = load_objects_from_file(args[0])
     objs_2 = load_objects_from_file(args[1])
 
+    if len(objs_1) <= 0:
+        raise Exception("Failed to load any Objects from file 1")
+    if len(objs_2) <= 0:
+        raise Exception("Failed to load any Objects from file 2")
+
     (has_moved, has_not_moved) = diff(objs_1, objs_2)
+
+    handleOutput(args[0], has_moved, has_not_moved)
 
     print("{} objects ha(s/ve) moved, {} ha(s/ve) not.".format(
         len(has_moved), len(has_not_moved)))
@@ -17,6 +25,8 @@ def main(args):
         print("The following items have moved:")
         for o in has_moved:
             print(o.id)
+    else:
+        print("No Objects have moved")
 
 
 def get_default(path):

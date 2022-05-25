@@ -521,3 +521,5 @@ cython_debug/
 # We dont need .tex or .pdf files for this
 **/*.pdf
 **/*.tex
+
+output/
