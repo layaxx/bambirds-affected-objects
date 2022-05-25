@@ -1,3 +1,5 @@
+""" Taken from Stackoverflow: https://stackoverflow.com/a/24490005 """
+
 import pyparsing as pp
 # relationship will refer to 'track' in all of your examples
 relationship = pp.Word(pp.alphas).setResultsName('relationship')
