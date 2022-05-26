@@ -16,7 +16,7 @@ def main(args):
 
     (has_moved, has_not_moved) = diff(objs_1, objs_2)
 
-    handleOutput(args[0], has_moved, has_not_moved)
+    handleOutput(args[0], has_moved, has_not_moved, args[2])
 
     print("{} objects ha(s/ve) moved, {} ha(s/ve) not.".format(
         len(has_moved), len(has_not_moved)))
@@ -61,7 +61,7 @@ def validate_args(args):
         if not (path_two.exists() and path_one.is_file()):
             raise Exception(
                 "A second path was not provided and a default could not be found")
-    return [path_one, path_two]
+    return [path_one, path_two, vars(args).get("bambirds")]
 
 
 if __name__ == "__main__":
@@ -72,6 +72,9 @@ if __name__ == "__main__":
 
     parser.add_argument("-s", '--situation-after', type=pathlib.Path,
                         help='second situation file', default=False)
+
+    parser.add_argument("-b", '--bambirds', type=pathlib.Path,
+                        help='path of bambirds folder', default="../bambirds")
 
     args = parser.parse_args()
 

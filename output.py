@@ -3,7 +3,7 @@ import os
 import subprocess
 
 
-def handleOutput(situation_path, have_moved, have_not_moved):
+def handleOutput(situation_path, have_moved, have_not_moved, path_to_bambirds):
     with open(situation_path) as f:
         string = f.read()
 
@@ -23,26 +23,29 @@ def handleOutput(situation_path, have_moved, have_not_moved):
 
     if not os.path.exists('./output'):
         os.makedirs('./output')
-    write_single_file(situation_path, non_shape_lines, lines_have_moved, True)
     write_single_file(situation_path, non_shape_lines,
-                      lines_have_not_moved, False)
+                      lines_have_moved, True, path_to_bambirds)
+    write_single_file(situation_path, non_shape_lines,
+                      lines_have_not_moved, False, path_to_bambirds)
 
 
-def write_single_file(situation_path, non_shape_lines, specific_lines, has_moved):
+def write_single_file(situation_path, non_shape_lines, specific_lines, has_moved, path_to_bambirds):
 
     file_name = os.path.basename(situation_path)
     file = os.path.splitext(file_name)[0]
 
     cmd_template = "swipl -s {}/planner/main.pl draw.pl -- {}"
 
-    path_to_bambirds = "../bambirds"
     content = build_content(non_shape_lines, specific_lines, file, has_moved)
     filename = os.path.join(
         "./output/", file + ("-has-moved.pl" if has_moved else "-has-not-moved.pl"))
     with open(filename, "w") as f:
         f.write(content)
-    subprocess.call(cmd_template.format(
-        path_to_bambirds, filename), shell=True)
+    try:
+        subprocess.call(cmd_template.format(
+            path_to_bambirds, filename), shell=True)
+    except:
+        print("Failed to produce PDF Output.")
 
 
 def build_content(non_shape_lines, shape_lines, file, has_moved):
