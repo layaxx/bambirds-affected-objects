@@ -17,7 +17,7 @@ def handleOutput(situation_path, have_moved, have_not_moved, path_to_bambirds):
     have_not_moved_ids = list(map(lambda obj: obj.id, have_not_moved))
 
     complete = list(map(lambda line:
-                        f"hasMaterial({get_id(line)}, moved, 1, 2, 3, 4)."
+                        f"hasMaterial({get_id(line)}, red, 1, 2, 3, 4)."
                         if (line.startswith("hasMaterial") and (get_id(line) in have_moved_ids))
                         else line,
                     lines))
