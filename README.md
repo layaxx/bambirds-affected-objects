@@ -30,3 +30,6 @@ swipl -s [PATH/TO/BAMBIRDS]/planner/main.pl draw.pl -- [PATH/TO/SITUATION/FILE]
 
 ## Highlighting of moved objects
 The thirds PDF contains all objects, with objects that have moved highlighted in red.
+
+## Demo
+For a demo, see the [Demo Folder](./demo).
