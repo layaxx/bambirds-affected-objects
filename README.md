@@ -10,7 +10,7 @@ Run main.py with one ore two arguments:
 - -s, --situation-after: path to second situation file (after shot):    *defaults to consecutive situation file*
 - -b, --bambirds: path of bambirds folder, relative to this folder:     *defaults to ../bambirds*
 
-IDs of Objects that have moved/disappeared from situation1 to situation2 are displayed in teh console. Additionally, two PDFs are generated, one including only objects that have moved and one only including objects that haven't. This relies on the presence of the prolog files from the bambirds project. 
+IDs of Objects that have moved/disappeared from situation1 to situation2 are displayed in the console. Additionally, two PDFs are generated, one including only objects that have moved and one only including objects that haven't. This relies on the presence of the prolog files from the bambirds project. 
 
 
 Sample usage:
