@@ -23,7 +23,13 @@ OR
 py main.py ./data/situation1-1.pl
 ```
 
-## Draw PDF Output
+## Manually draw PDF Output
 ```bash
 swipl -s [PATH/TO/BAMBIRDS]/planner/main.pl draw.pl -- [PATH/TO/SITUATION/FILE]
+```
+
+## Highlighting of moved objects
+The thirds PDF contains all objects, with objects that have moved highlighted in red, assuming this line is added in the tikz.pl `write_tikz(Plans)` function:
+```
+writeln(Out, '\\definecolor{moved}{rgb}{1.0,0.0,0.0}'),
 ```
