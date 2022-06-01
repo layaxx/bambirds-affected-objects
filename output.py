@@ -3,7 +3,7 @@ import os
 import subprocess
 
 
-def handleOutput(situation_path, have_moved, have_not_moved, path_to_bambirds):
+def handle_output(situation_path, have_moved, have_not_moved, path_to_bambirds, debug):
     with open(situation_path) as f:
         string = f.read()
 
@@ -29,34 +29,33 @@ def handleOutput(situation_path, have_moved, have_not_moved, path_to_bambirds):
 
     if not os.path.exists('./output'):
         os.makedirs('./output')
-    write_single_file(situation_path, non_shape_lines,
-                      lines_have_moved, "has-moved", path_to_bambirds)
-    write_single_file(situation_path, non_shape_lines,
-                      lines_have_not_moved, "has-not-moved", path_to_bambirds)
-    write_single_file(situation_path, complete, [],
-                      "combined", path_to_bambirds)
+
+    write_file_curried = (lambda lines1, lines2, postfix: write_single_file(
+        situation_path, lines1, lines2, postfix, path_to_bambirds, debug))
+    write_file_curried(non_shape_lines, lines_have_moved, "has-moved")
+    write_file_curried(non_shape_lines, lines_have_not_moved, "has-not-moved")
+    write_file_curried(complete, [], "combined")
 
 
-def write_single_file(situation_path, non_shape_lines, specific_lines, postfix, path_to_bambirds):
+def write_single_file(situation_path, non_shape_lines, specific_lines, postfix, path_to_bambirds, debug):
 
     file_name = os.path.basename(situation_path)
     file = os.path.splitext(file_name)[0]
 
-    cmd_template = "swipl -s {}/planner/main.pl draw.pl -- {}"
-
     content = build_content(non_shape_lines, specific_lines, file, postfix)
     filename = os.path.join(
         "./output/", file + "-" + postfix + ".pl")
+
     with open(filename, "w") as f:
         print('writing: ' + filename)
         f.write(content)
     try:
         subprocess.run(
-            cmd_template.format(
+            "swipl -s {}/planner/main.pl draw.pl -- {}".format(
                 path_to_bambirds, filename),
             shell=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL)
+            stdout=None if debug else subprocess.DEVNULL,
+            stderr=None if debug else subprocess.DEVNULL)
     except:
         print("Failed to produce PDF Output.")
 

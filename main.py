@@ -2,7 +2,7 @@ import argparse
 import pathlib
 from diff import diff
 from load_objects import load_objects_from_file
-from output import handleOutput
+from output import handle_output
 
 
 def main(args):
@@ -16,13 +16,19 @@ def main(args):
 
     (has_moved, has_not_moved) = diff(objs_1, objs_2)
 
-    handleOutput(args[0], has_moved, has_not_moved, args[2])
+    handle_output(args[0], has_moved, has_not_moved, args[2], args[3])
 
-    print("{} objects ha(s/ve) moved, {} ha(s/ve) not.".format(
-        len(has_moved), len(has_not_moved)))
+    print("{} objects {} moved or were destroyed, {} remain{} in place.".format(
+        len(has_moved),
+        "has" if len(has_moved) == 1 else "have",
+        len(has_not_moved),
+        "s" if len(has_not_moved) == 1 else ""))
 
     if(len(has_moved)):
-        print("The following items have moved:")
+        if len(has_moved) > 1:
+            print("The following items have moved or were destroyed:")
+        else:
+            print("The following item has moved or wa destroyed:")
         for o in has_moved:
             print(o.id)
     else:
@@ -61,7 +67,7 @@ def validate_args(args):
         if not (path_two.exists() and path_one.is_file()):
             raise Exception(
                 "A second path was not provided and a default could not be found")
-    return [path_one, path_two, vars(args).get("bambirds")]
+    return [path_one, path_two, vars(args).get("bambirds"), vars(args).get("debug")]
 
 
 if __name__ == "__main__":
@@ -75,6 +81,9 @@ if __name__ == "__main__":
 
     parser.add_argument("-b", '--bambirds', type=pathlib.Path,
                         help='path of bambirds folder', default="../bambirds")
+
+    parser.add_argument("-d", '--debug', type=bool, nargs='?',
+                        help='display output of PDF generation', const=True, default=False)
 
     args = parser.parse_args()
 
