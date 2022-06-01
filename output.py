@@ -3,7 +3,15 @@ import os
 import subprocess
 
 
-def handle_output(situation_path, have_moved, have_not_moved, path_to_bambirds, debug):
+def set_material(line, have_moved_ids, were_destroyed_ids):
+    if line.startswith("hasMaterial") and (get_id(line) in have_moved_ids):
+        return f"hasMaterial({get_id(line)}, yellow, 1, 2, 3, 4)."
+    if line.startswith("hasMaterial") and (get_id(line) in were_destroyed_ids):
+        return f"hasMaterial({get_id(line)}, red, 1, 2, 3, 4)."
+    return line
+
+
+def handle_output(situation_path, have_moved, were_destroyed, have_not_moved, path_to_bambirds, debug):
     with open(situation_path) as f:
         string = f.read()
 
@@ -15,12 +23,10 @@ def handle_output(situation_path, have_moved, have_not_moved, path_to_bambirds, 
 
     have_moved_ids = list(map(lambda obj: obj.id, have_moved))
     have_not_moved_ids = list(map(lambda obj: obj.id, have_not_moved))
+    were_destroyed_ids = list(map(lambda obj: obj.id, were_destroyed))
 
-    complete = list(map(lambda line:
-                        f"hasMaterial({get_id(line)}, red, 1, 2, 3, 4)."
-                        if (line.startswith("hasMaterial") and (get_id(line) in have_moved_ids))
-                        else line,
-                    lines))
+    complete = list(map(lambda line: set_material(
+        line, have_moved_ids, were_destroyed_ids), lines))
 
     lines_have_moved = list(filter(lambda line: get_id(
         line) in have_moved_ids, shape_lines))

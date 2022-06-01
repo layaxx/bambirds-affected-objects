@@ -2,6 +2,7 @@ import argparse
 import pathlib
 from diff import diff
 from load_objects import load_objects_from_file
+from object2 import object2
 from output import handle_output
 
 
@@ -14,25 +15,46 @@ def main(args):
     if len(objs_2) <= 0:
         raise Exception("Failed to load any Objects from file 2")
 
-    (has_moved, has_not_moved) = diff(objs_1, objs_2)
+    (not_in_sit_2, has_not_moved) = diff(objs_1, objs_2)
+    (not_in_sit_1, _) = diff(objs_2, objs_1)
 
-    handle_output(args[0], has_moved, has_not_moved, args[2], args[3])
+    # diff objects in not_in_sit_2 against objects in not_in_sit_1
+    # on grounds of material, shape?, size?
+
+    print("{} items must have been destroyed, {} items must have moved".format(
+        len(not_in_sit_2) - len(not_in_sit_1), len(not_in_sit_1)))
+
+    not_in_sit_1_converted = list(map(lambda obj: object2(obj), not_in_sit_1))
+    not_in_sit_2_converted = list(map(lambda obj: object2(obj), not_in_sit_2))
+
+    has_moved = []
+    was_destroyed = []
+
+    for obj in not_in_sit_2_converted:
+        if obj in not_in_sit_1_converted:
+            print("Object {} was determined to have moved.".format(obj.id))
+            has_moved.append(obj)
+            try:
+                print(not_in_sit_1_converted.index(obj))
+                not_in_sit_1_converted.remove(obj)
+            except:
+                print("WHY?")  # TODO: what is going on here?
+        else:
+            was_destroyed.append(obj)
+            print("Object {} was determined to have been destroyed.".format(obj.id))
+
+    handle_output(situation_path=args[0],
+                  have_moved=has_moved,
+                  were_destroyed=was_destroyed,
+                  have_not_moved=has_not_moved,
+                  path_to_bambirds=args[2],
+                  debug=args[3])
 
     print("{} objects {} moved or were destroyed, {} remain{} in place.".format(
-        len(has_moved),
-        "has" if len(has_moved) == 1 else "have",
+        len(not_in_sit_2),
+        "has" if len(not_in_sit_2) == 1 else "have",
         len(has_not_moved),
         "s" if len(has_not_moved) == 1 else ""))
-
-    if(len(has_moved)):
-        if len(has_moved) > 1:
-            print("The following items have moved or were destroyed:")
-        else:
-            print("The following item has moved or wa destroyed:")
-        for o in has_moved:
-            print(o.id)
-    else:
-        print("No Objects have moved")
 
 
 def get_default(path):
