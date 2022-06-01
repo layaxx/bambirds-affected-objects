@@ -13,7 +13,6 @@ def load_objects_from_string(string):
     lines = string.splitlines()
     filtered_lines = list(filter(lambda line: line.startswith("shape"), lines))
 
-    parsed_facts = parser.parseString("\n".join(filtered_lines)).get("fact")
-    shapes = filter(lambda f: f[0] == "shape", parsed_facts)
+    shapes = parser.parseString("\n".join(filtered_lines)).get("fact")
 
     return list(map(lambda shape: object(shape), shapes))

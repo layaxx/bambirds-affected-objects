@@ -34,7 +34,7 @@ class object:
             # Again relies on robust detection.
             return False
 
-        # Compare euclidian distance
+        # Compare euclidean distance
         d = math.sqrt(math.pow(float(other_object.cx) - float(self.cx), 2) +
                       math.pow(float(other_object.cy) - float(self.cy), 2))
 

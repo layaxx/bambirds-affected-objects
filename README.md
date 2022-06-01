@@ -30,7 +30,7 @@ swipl -s [PATH/TO/BAMBIRDS]/planner/main.pl draw.pl -- [PATH/TO/SITUATION/FILE]
 ```
 
 ## Highlighting of moved objects
-The thirds PDF contains all objects, with objects that have moved highlighted in red.
+The thirds PDF contains all objects, with objects that have moved highlighted in yellow and objects that were destroyed highlighted in red. This does not apply to birds, which keep their color regardless of status.
 
 ## Demo
 For a demo, see the [Demo Folder](./demo).

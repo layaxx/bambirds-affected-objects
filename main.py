@@ -12,34 +12,26 @@ def main(args):
 
     if len(objs_1) <= 0:
         raise Exception("Failed to load any Objects from file 1")
-    if len(objs_2) <= 0:
-        raise Exception("Failed to load any Objects from file 2")
 
     (not_in_sit_2, has_not_moved) = diff(objs_1, objs_2)
     (not_in_sit_1, _) = diff(objs_2, objs_1)
 
-    # diff objects in not_in_sit_2 against objects in not_in_sit_1
-    # on grounds of material, shape?, size?
-
     print("{} items must have been destroyed, {} items must have moved".format(
         len(not_in_sit_2) - len(not_in_sit_1), len(not_in_sit_1)))
 
-    not_in_sit_1_converted = list(map(lambda obj: object2(obj), not_in_sit_1))
-    not_in_sit_2_converted = list(map(lambda obj: object2(obj), not_in_sit_2))
+    not_in_sit_1_converted = [object2(obj) for obj in not_in_sit_1]
 
     has_moved = []
     was_destroyed = []
 
-    for obj in not_in_sit_2_converted:
-        if obj in not_in_sit_1_converted:
-            print("Object {} was determined to have moved.".format(obj.id))
+    for obj_old in not_in_sit_2:
+        obj = object2(obj_old)
+        try:
+            idx = not_in_sit_1_converted.index(obj)
             has_moved.append(obj)
-            try:
-                print(not_in_sit_1_converted.index(obj))
-                not_in_sit_1_converted.remove(obj)
-            except:
-                print("WHY?")  # TODO: what is going on here?
-        else:
+            not_in_sit_1_converted.pop(idx)
+            print("Object {} was determined to have moved.".format(obj.id))
+        except ValueError:
             was_destroyed.append(obj)
             print("Object {} was determined to have been destroyed.".format(obj.id))
 
@@ -50,14 +42,16 @@ def main(args):
                   path_to_bambirds=args[2],
                   debug=args[3])
 
-    print("{} objects {} moved or were destroyed, {} remain{} in place.".format(
-        len(not_in_sit_2),
-        "has" if len(not_in_sit_2) == 1 else "have",
+    print("{} objects {} moved, {} {} destroyed, {} remain{} in place.".format(
+        len(has_moved),
+        "has" if len(has_moved) == 1 else "have",
+        len(was_destroyed),
+        "was" if len(was_destroyed) == 1 else "were",
         len(has_not_moved),
         "s" if len(has_not_moved) == 1 else ""))
 
 
-def get_default(path):
+def get_default_second_path(path):
     try:
         path = str(path)
         split_path = path.split("-")
@@ -77,6 +71,11 @@ def validate_args(args):
         raise Exception(
             "Please provide a VALID path to at least one situation")
 
+    path_to_bambirds = pathlib.Path(vars(args).get("bambirds"))
+
+    if not (path_to_bambirds.exists()):
+        print("WARNING: Invalid path to bambirds, PDF creation will fail")
+
     path_two = None
     if vars(args).get("situation_after"):
         path_two = pathlib.Path(vars(args).get("situation_after"))
@@ -84,12 +83,12 @@ def validate_args(args):
             raise Exception(
                 "A second path was provided but not valid")
     else:
-        path_two = pathlib.Path(get_default(
+        path_two = pathlib.Path(get_default_second_path(
             vars(args).get("situation-before")))
         if not (path_two.exists() and path_one.is_file()):
             raise Exception(
                 "A second path was not provided and a default could not be found")
-    return [path_one, path_two, vars(args).get("bambirds"), vars(args).get("debug")]
+    return [path_one, path_two, path_to_bambirds, vars(args).get("debug")]
 
 
 if __name__ == "__main__":

@@ -3,11 +3,13 @@ import os
 import subprocess
 
 
-def set_material(line, have_moved_ids, were_destroyed_ids):
-    if line.startswith("hasMaterial") and (get_id(line) in have_moved_ids):
-        return f"hasMaterial({get_id(line)}, yellow, 1, 2, 3, 4)."
-    if line.startswith("hasMaterial") and (get_id(line) in were_destroyed_ids):
-        return f"hasMaterial({get_id(line)}, red, 1, 2, 3, 4)."
+def update_material(line, have_moved_ids, were_destroyed_ids):
+    if line.startswith("hasMaterial"):
+        id = get_id(line)
+        if id in have_moved_ids:
+            return f"hasMaterial({get_id(line)}, yellow, 1, 2, 3, 4)."
+        if id in were_destroyed_ids:
+            return f"hasMaterial({get_id(line)}, red, 1, 2, 3, 4)."
     return line
 
 
@@ -17,16 +19,17 @@ def handle_output(situation_path, have_moved, were_destroyed, have_not_moved, pa
 
     lines = string.splitlines()
 
-    shape_lines = list(filter(lambda line: line.startswith("shape"), lines))
-    non_shape_lines = list(
-        filter(lambda line: not line.startswith("shape"), lines))
+    shape_lines = [line for line in lines if line.startswith("shape")]
+    non_shape_lines = [line for line in lines if not line.startswith("shape")]
 
-    have_moved_ids = list(map(lambda obj: obj.id, have_moved))
-    have_not_moved_ids = list(map(lambda obj: obj.id, have_not_moved))
-    were_destroyed_ids = list(map(lambda obj: obj.id, were_destroyed))
+    have_moved_ids = [obj.id for obj in have_moved]
+    have_not_moved_ids = [obj.id for obj in have_not_moved]
+    were_destroyed_ids = [obj.id for obj in were_destroyed]
 
-    complete = list(map(lambda line: set_material(
-        line, have_moved_ids, were_destroyed_ids), lines))
+    # only useful for PDF output
+    complete = [update_material(line,
+                                have_moved_ids,
+                                were_destroyed_ids) for line in lines]
 
     lines_have_moved = list(filter(lambda line: get_id(
         line) in have_moved_ids, shape_lines))
@@ -38,6 +41,7 @@ def handle_output(situation_path, have_moved, were_destroyed, have_not_moved, pa
 
     write_file_curried = (lambda lines1, lines2, postfix: write_single_file(
         situation_path, lines1, lines2, postfix, path_to_bambirds, debug))
+
     write_file_curried(non_shape_lines, lines_have_moved, "has-moved")
     write_file_curried(non_shape_lines, lines_have_not_moved, "has-not-moved")
     write_file_curried(complete, [], "combined")
@@ -68,10 +72,12 @@ def write_single_file(situation_path, non_shape_lines, specific_lines, postfix, 
 
 def build_content(non_shape_lines, shape_lines, file, postfix):
     return "\n".join(
-        list(filter(lambda line: not line.startswith("situation_name("), non_shape_lines))) \
-        + "\nsituation_name('{}-{}').\n".format(file, postfix)\
+        [line for line in non_shape_lines if not line.startswith(
+            "situation_name(")]) \
+        + "\nsituation_name('{}-{}').\n".format(file, postfix) \
         + "\n".join(shape_lines)
 
 
+# returns the first argument in a Prolog fact, which usually is the id.
 def get_id(line):
     return parser.parseString(line).get("fact")[0][1]

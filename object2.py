@@ -1,7 +1,3 @@
-import math
-import re
-
-
 class object2:
     shape = None
     material = None
@@ -23,6 +19,8 @@ class object2:
     def __str__(self):
         return "This Object is of shape {shape}, material {material} and has center ({cx},{cy}) dollars!".format(shape=self.shape, material=self.material, cx=self.cx, cy=self.cy)
 
+    # basically the same as object, but compares size instead of position.
+    # TODO: not sure if there is a less repetitive way to achieve this
     def __eq__(self, other_object):
         if self.material != other_object.material:
             # Objects cannot change material.
@@ -34,8 +32,8 @@ class object2:
             # TODO: can shape change after impact?
             return False
 
-        d = 10  # TODO: again a arbitrary threshold
-        if((float(self.mass) - float(other_object.mass)) > d):
+        threshold = 10  # TODO: again a arbitrary threshold
+        if((float(self.mass) - float(other_object.mass)) > threshold):
             return False
 
         return True
