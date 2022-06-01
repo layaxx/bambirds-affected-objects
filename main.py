@@ -13,7 +13,7 @@ def main(args):
     if len(objs_1) <= 0:
         raise Exception("Failed to load any Objects from file 1")
 
-    (not_in_sit_2, has_not_moved) = diff(objs_1, objs_2)
+    (not_in_sit_2, _) = diff(objs_1, objs_2)
     (not_in_sit_1, _) = diff(objs_2, objs_1)
 
     print("{} items must have been destroyed, {} items must have moved".format(
@@ -21,34 +21,38 @@ def main(args):
 
     not_in_sit_1_converted = [object2(obj) for obj in not_in_sit_1]
 
-    has_moved = []
-    was_destroyed = []
+    result = dict([(obj.id, "unchanged") for obj in objs_1])
+    result["count-destroyed"] = 0
+    result["count-moved"] = 0
 
     for obj_old in not_in_sit_2:
         obj = object2(obj_old)
         try:
             idx = not_in_sit_1_converted.index(obj)
-            has_moved.append(obj)
             not_in_sit_1_converted.pop(idx)
+            result[obj.id] = "moved"
+            result["count-moved"] += 1
             print("Object {} was determined to have moved.".format(obj.id))
         except ValueError:
-            was_destroyed.append(obj)
+            result[obj.id] = "destroyed"
+            result["count-destroyed"] += 1
             print("Object {} was determined to have been destroyed.".format(obj.id))
 
-    handle_output(situation_path=args[0],
-                  have_moved=has_moved,
-                  were_destroyed=was_destroyed,
-                  have_not_moved=has_not_moved,
-                  path_to_bambirds=args[2],
-                  debug=args[3])
+    result["count-unchanged"] = len(objs_1) - (result["count-moved"] +
+                                               result["count-destroyed"])
 
     print("{} objects {} moved, {} {} destroyed, {} remain{} in place.".format(
-        len(has_moved),
-        "has" if len(has_moved) == 1 else "have",
-        len(was_destroyed),
-        "was" if len(was_destroyed) == 1 else "were",
-        len(has_not_moved),
-        "s" if len(has_not_moved) == 1 else ""))
+        result["count-moved"],
+        "has" if result["count-moved"] == 1 else "have",
+        result["count-destroyed"],
+        "was" if result["count-destroyed"] == 1 else "were",
+        result["count-unchanged"],
+        "s" if result["count-unchanged"] == 1 else ""))
+
+    handle_output(situation_path=args[0],
+                  result=result,
+                  path_to_bambirds=args[2],
+                  debug=args[3])
 
 
 def get_default_second_path(path):

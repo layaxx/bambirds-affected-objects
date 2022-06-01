@@ -34,3 +34,10 @@ The thirds PDF contains all objects, with objects that have moved highlighted in
 
 ## Demo
 For a demo, see the [Demo Folder](./demo).
+
+## About differentiating between moved/destroyed objects
+This is currently somewhat unstable. 
+In particular, it cannot be safely determined which object has moved and which was destroyed if several similar blocks (same material, same shape and similar size) changed. 
+Additionally, this currently assumes objects that change their shape to have been removed, even if this might not be correct. 
+For example, from situation1-1 to situation1-2, one of the ice blocks is hit and changes shape. 
+It is therefore considered destroyed, even if it remains on stage.

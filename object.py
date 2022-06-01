@@ -43,5 +43,3 @@ class object:
             return False
 
         return True
-
-        # TODO: Should mass and/or coordinates be compared?

@@ -3,56 +3,54 @@ import os
 import subprocess
 
 
-def update_material(line, have_moved_ids, were_destroyed_ids):
+def update_material(line, result):
     if line.startswith("hasMaterial"):
         id = get_id(line)
-        if id in have_moved_ids:
+        if result[id] == "moved":
             return f"hasMaterial({get_id(line)}, yellow, 1, 2, 3, 4)."
-        if id in were_destroyed_ids:
+        if result[id] == "destroyed":
             return f"hasMaterial({get_id(line)}, red, 1, 2, 3, 4)."
     return line
 
 
-def handle_output(situation_path, have_moved, were_destroyed, have_not_moved, path_to_bambirds, debug):
+def handle_output(situation_path, result, path_to_bambirds, debug):
     with open(situation_path) as f:
         string = f.read()
 
     lines = string.splitlines()
 
-    shape_lines = [line for line in lines if line.startswith("shape")]
-    non_shape_lines = [line for line in lines if not line.startswith("shape")]
-
-    have_moved_ids = [obj.id for obj in have_moved]
-    have_not_moved_ids = [obj.id for obj in have_not_moved]
-    were_destroyed_ids = [obj.id for obj in were_destroyed]
+    shape_lines = [line for line in lines if line.startswith("shape(")]
+    non_shape_lines = [line for line in lines if (not line.startswith(
+        "shape(")) and (not line.startswith("situation_name("))]
 
     # only useful for PDF output
     complete = [update_material(line,
-                                have_moved_ids,
-                                were_destroyed_ids) for line in lines]
+                                result) for line in lines]
 
-    lines_have_moved = list(filter(lambda line: get_id(
-        line) in have_moved_ids, shape_lines))
-    lines_have_not_moved = list(filter(lambda line: get_id(
-        line) in have_not_moved_ids, shape_lines))
+    lines_have_changed = [line for line in shape_lines if result[get_id(
+        line)] in ["moved", "destroyed"]]
+    lines_have_not_changed = [line for line in shape_lines if result[get_id(
+        line)] == "unchanged"]
 
     if not os.path.exists('./output'):
         os.makedirs('./output')
 
-    write_file_curried = (lambda lines1, lines2, postfix: write_single_file(
-        situation_path, lines1, lines2, postfix, path_to_bambirds, debug))
+    write_file_curried = (lambda lines, postfix: write_single_file(
+        situation_path, lines, postfix, path_to_bambirds, debug))
 
-    write_file_curried(non_shape_lines, lines_have_moved, "has-moved")
-    write_file_curried(non_shape_lines, lines_have_not_moved, "has-not-moved")
-    write_file_curried(complete, [], "combined")
+    write_file_curried(non_shape_lines + lines_have_changed,
+                       "has-changed")
+    write_file_curried(non_shape_lines + lines_have_not_changed,
+                       "has-not-changed")
+    write_file_curried(complete, "combined")
 
 
-def write_single_file(situation_path, non_shape_lines, specific_lines, postfix, path_to_bambirds, debug):
+def write_single_file(situation_path, lines, postfix, path_to_bambirds, debug):
 
     file_name = os.path.basename(situation_path)
     file = os.path.splitext(file_name)[0]
 
-    content = build_content(non_shape_lines, specific_lines, file, postfix)
+    content = build_content(lines, file, postfix)
     filename = os.path.join(
         "./output/", file + "-" + postfix + ".pl")
 
@@ -70,12 +68,10 @@ def write_single_file(situation_path, non_shape_lines, specific_lines, postfix, 
         print("Failed to produce PDF Output.")
 
 
-def build_content(non_shape_lines, shape_lines, file, postfix):
+def build_content(lines, file, postfix):
     return "\n".join(
-        [line for line in non_shape_lines if not line.startswith(
-            "situation_name(")]) \
-        + "\nsituation_name('{}-{}').\n".format(file, postfix) \
-        + "\n".join(shape_lines)
+        lines)\
+        + "\nsituation_name('{}-{}').\n".format(file, postfix)
 
 
 # returns the first argument in a Prolog fact, which usually is the id.
