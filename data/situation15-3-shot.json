@@ -1,0 +1,23 @@
+{
+  "target_object": "ice4",
+  "impact_angle": -64,
+  "strategy": "bunker",
+  "confidence": 1.01,
+  "shot": {
+    "sling_x": 155,
+    "sling_y": 340,
+    "drag_x": -421,
+    "drag_y": 907,
+    "target_x": 555.0,
+    "target_y": 352.0,
+    "shot_time": 0,
+    "tap_time": 3230,
+    "timeOfFlight": 0,
+    "velocity": 0.0
+  },
+  "reasons": [
+    "pig0"
+  ],
+  "thinker": "NEWPLANNER",
+  "bird": "bluebird0"
+}

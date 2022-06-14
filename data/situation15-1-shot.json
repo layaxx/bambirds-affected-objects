@@ -1,0 +1,23 @@
+{
+  "target_object": "pig1",
+  "impact_angle": -62,
+  "strategy": "targetPig",
+  "confidence": 0.6757521252332572,
+  "shot": {
+    "sling_x": 155,
+    "sling_y": 340,
+    "drag_x": -462,
+    "drag_y": 887,
+    "target_x": 599.0,
+    "target_y": 368.0,
+    "shot_time": 0,
+    "tap_time": 3241,
+    "timeOfFlight": 0,
+    "velocity": 0.0
+  },
+  "reasons": [
+    "pig1"
+  ],
+  "thinker": "NEWPLANNER",
+  "bird": "bluebird0"
+}

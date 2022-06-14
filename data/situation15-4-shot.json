@@ -1,0 +1,23 @@
+{
+  "target_object": "wood6",
+  "impact_angle": -20,
+  "strategy": "bunker",
+  "confidence": 0.8,
+  "shot": {
+    "sling_x": 155,
+    "sling_y": 340,
+    "drag_x": -876,
+    "drag_y": 482,
+    "target_x": 518.3611672262663,
+    "target_y": 319.4921235223575,
+    "shot_time": 0,
+    "tap_time": 1413,
+    "timeOfFlight": 0,
+    "velocity": 0.0
+  },
+  "reasons": [
+    "pig0"
+  ],
+  "thinker": "NEWPLANNER",
+  "bird": "bluebird0"
+}

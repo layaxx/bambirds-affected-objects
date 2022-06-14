@@ -13,8 +13,8 @@ def main(args):
     if len(objs_1) <= 0:
         raise Exception("Failed to load any Objects from file 1")
 
-    (not_in_sit_2, _) = diff(objs_1, objs_2)
-    (not_in_sit_1, _) = diff(objs_2, objs_1)
+    not_in_sit_2 = diff(objs_1, objs_2)
+    not_in_sit_1 = diff(objs_2, objs_1)
 
     print("{} items must have been destroyed, {} items must have moved".format(
         len(not_in_sit_2) - len(not_in_sit_1), len(not_in_sit_1)))
