@@ -1,5 +1,12 @@
 from object import object
 from parser import parser
+import json
+
+
+def load_shot(path):
+    with open(str(path).strip(".pl") + "-shot.json") as file:
+        shot = json.load(file)
+    return shot
 
 
 def load_objects_from_file(path):

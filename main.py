@@ -1,7 +1,7 @@
 import argparse
 import pathlib
 from diff import diff
-from load_objects import load_objects_from_file
+from load_objects import load_objects_from_file, load_shot
 from object2 import object2
 from output import handle_output
 from database import add_case_to_db
@@ -10,6 +10,7 @@ from database import add_case_to_db
 def main(args):
     (objs_1, relevant_lines) = load_objects_from_file(args[0])
     (objs_2, _) = load_objects_from_file(args[1])
+    shot = load_shot(args[0])
 
     if len(objs_1) <= 0:
         raise Exception("Failed to load any Objects from file 1")
@@ -54,13 +55,15 @@ def main(args):
         result["count-unchanged"],
         "s" if result["count-unchanged"] == 1 else ""))
 
-    add_case_to_db(result, relevant_lines, affected_ids)
+    add_case_to_db(result, relevant_lines, affected_ids, shot)
 
     # this is only the PDF visual debug output
-    handle_output(situation_path=args[0],
-                  result=result,
-                  path_to_bambirds=args[2],
-                  debug=args[3])
+    output_pdf = False
+    if output_pdf:
+        handle_output(situation_path=args[0],
+                      result=result,
+                      path_to_bambirds=args[2],
+                      debug=args[3])
 
 
 def get_default_second_path(path):

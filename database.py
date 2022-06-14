@@ -1,4 +1,4 @@
-def add_case_to_db(result, relevant_lines, affected_ids):
+def add_case_to_db(result, relevant_lines, affected_ids, shot):
 
     database_location = "database.pl"
 
@@ -17,13 +17,29 @@ def add_case_to_db(result, relevant_lines, affected_ids):
         file.write("\n")
         for line in res:
             file.write(replace_id(line, case_index) + "\n")
-        file.write("case(c{}, [{}]).\n".format(
-            case_index, ",".join(new_ids)))
+
+        # case(id, target, impact_angle, strategy, bird, [...shot])
+        file.write("shot(s{}, {}, {}, {}, {}, {}, [{}]).\n".format(
+            case_index,
+            shot.get("target_object"),
+            shot.get("impact_angle"),
+            shot.get("strategy"),
+            shot.get("bird"),
+            shot.get("target_object"),
+            ", ".join(map(str, shot.get("shot").values()))
+        ))
+
+        file.write("case(c{}, [{}], s{}).\n".format(
+            case_index,
+            ",".join(new_ids),
+            case_index))
+
         for id in affected_ids:
             file.write("effect(c{}, {}, {}).\n".format(case_index,
                                                        get_new_id(
                                                            id, case_index),
                                                        result[id]))
+        # TODO: write shot to file
         file.write("%" + str(case_index + 1))
 
 
