@@ -3,9 +3,12 @@ def add_case_to_db(result, relevant_lines, affected_ids, shot):
     database_location = "database.pl"
 
     with open(database_location, "r") as file:
-        last_line = file.readlines()[-1]
-        last_line = last_line.strip("% ")
-        case_index = int(last_line.strip())
+        try:
+            last_line = file.readlines()[-1]
+            last_line = last_line.strip("% ")
+            case_index = int(last_line.strip())
+        except:
+            case_index = 1
 
     res = list(filter(lambda line: get_id(line) in (
         affected_ids), relevant_lines))
@@ -14,9 +17,11 @@ def add_case_to_db(result, relevant_lines, affected_ids, shot):
         old_id, case_index), affected_ids))
 
     with open(database_location, "a") as file:
+        if case_index == 1:
+            file.write("%1")
         file.write("\n")
         for line in res:
-            file.write(replace_id(line, case_index) + "\n")
+            file.write("case_" + replace_id(line, case_index) + "\n")
 
         # case(id, target, impact_angle, strategy, bird, [...shot])
         file.write("shot(s{}, {}, {}, {}, {}, {}, [{}]).\n".format(
