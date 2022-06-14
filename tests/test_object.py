@@ -36,7 +36,7 @@ class TestObjects(unittest.TestCase):
 
     def test_equal_for_similar_center(self):
         self.obj1.cx += 1
-        self.obj2.cy -= 5
+        self.obj2.cy -= 3
         self.assertEqual(
             self.obj1, self.obj2, "Objects with similar center should be considered equal")
 

@@ -4,11 +4,12 @@ from diff import diff
 from load_objects import load_objects_from_file
 from object2 import object2
 from output import handle_output
+from database import add_case_to_db
 
 
 def main(args):
-    objs_1 = load_objects_from_file(args[0])
-    objs_2 = load_objects_from_file(args[1])
+    (objs_1, relevant_lines) = load_objects_from_file(args[0])
+    (objs_2, _) = load_objects_from_file(args[1])
 
     if len(objs_1) <= 0:
         raise Exception("Failed to load any Objects from file 1")
@@ -21,9 +22,11 @@ def main(args):
 
     not_in_sit_1_converted = [object2(obj) for obj in not_in_sit_1]
 
-    result = dict([(obj.id, "unchanged") for obj in objs_1])
+    result = dict([(obj.id, ("unchanged")) for obj in objs_1])
     result["count-destroyed"] = 0
     result["count-moved"] = 0
+
+    affected_ids = []
 
     for obj_old in not_in_sit_2:
         obj = object2(obj_old)
@@ -32,10 +35,12 @@ def main(args):
             not_in_sit_1_converted.pop(idx)
             result[obj.id] = "moved"
             result["count-moved"] += 1
+            affected_ids.append(obj.id)
             print("Object {} was determined to have moved.".format(obj.id))
         except ValueError:
             result[obj.id] = "destroyed"
             result["count-destroyed"] += 1
+            affected_ids.append(obj.id)
             print("Object {} was determined to have been destroyed.".format(obj.id))
 
     result["count-unchanged"] = len(objs_1) - (result["count-moved"] +
@@ -49,6 +54,9 @@ def main(args):
         result["count-unchanged"],
         "s" if result["count-unchanged"] == 1 else ""))
 
+    add_case_to_db(result, relevant_lines, affected_ids)
+
+    # this is only the PDF visual debug output
     handle_output(situation_path=args[0],
                   result=result,
                   path_to_bambirds=args[2],

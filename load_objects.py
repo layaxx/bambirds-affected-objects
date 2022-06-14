@@ -11,8 +11,17 @@ def load_objects_from_file(path):
 
 def load_objects_from_string(string):
     lines = string.splitlines()
-    filtered_lines = list(filter(lambda line: line.startswith("shape"), lines))
+    shape_lines = list(
+        filter(lambda line: line.startswith("shape"), lines))
+    material_lines = list(
+        filter(lambda line: line.startswith("hasMaterial"), lines))
 
-    shapes = parser.parseString("\n".join(filtered_lines)).get("fact")
+    shapes = parser.parseString("\n".join(shape_lines)).get("fact")
 
-    return list(map(lambda shape: object(shape), shapes))
+    objects = list(map(lambda shape: object(shape), shapes))
+
+    return (objects, material_lines + shape_lines)
+
+
+def get_id(fact):
+    return fact[1]

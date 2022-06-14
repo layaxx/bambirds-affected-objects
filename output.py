@@ -13,6 +13,14 @@ def update_material(line, result):
     return line
 
 
+def status_to_prolog_predicate(status):
+    if status == "moved":
+        return "hasMoved("
+    if status == "destroyed":
+        return "wasDestroyed("
+    return "isUnchanged("
+
+
 def handle_output(situation_path, result, path_to_bambirds, debug):
     with open(situation_path) as f:
         string = f.read()
@@ -25,7 +33,9 @@ def handle_output(situation_path, result, path_to_bambirds, debug):
 
     # only useful for PDF output
     complete = [update_material(line,
-                                result) for line in lines if not line.startswith("situation_name(")]
+                                result) for line in lines if not line.startswith("situation_name(")] \
+        + [status_to_prolog_predicate(status) +
+           id + ")." for id, status in result.items()]
 
     lines_have_changed = [line for line in shape_lines if result[get_id(
         line)] in ["moved", "destroyed"]]
