@@ -1,7 +1,7 @@
 # Demo
 
 Running `py main.py ./data/situation15-1.pl` from the project root should result in the following three PDF files being generated and displayed:
-1. [./situation15-1.pdf](./situation15-1.pdf)
+1. [./situation15-1-combined.pdf](./situation15-1-combined.pdf)
 2. [./situation15-1-has-changed.pdf](./situation15-1-has-changed.pdf)
 2. [./situation15-1-has-not-changed.pdf](./situation15-1-has-not-changed.pdf)
 

@@ -25,7 +25,7 @@ def handle_output(situation_path, result, path_to_bambirds, debug):
 
     # only useful for PDF output
     complete = [update_material(line,
-                                result) for line in lines]
+                                result) for line in lines if not line.startswith("situation_name(")]
 
     lines_have_changed = [line for line in shape_lines if result[get_id(
         line)] in ["moved", "destroyed"]]
