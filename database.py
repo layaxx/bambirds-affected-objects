@@ -23,17 +23,13 @@ def add_case_to_db(result, relevant_lines, affected_ids, shot):
         for line in res:
             file.write("case_" + replace_id(line, case_index) + "\n")
 
-        # case(id, target, impact_angle, strategy, bird, [...shot])
-        file.write("shot(s{}, {}, {}, {}, {}, {}, [{}]).\n".format(
+        file.write("shot(s{}, {}, {}).\n".format(
             case_index,
-            shot.get("target_object"),
-            shot.get("impact_angle"),
-            shot.get("strategy"),
-            shot.get("bird"),
-            shot.get("target_object"),
-            ", ".join(map(str, shot.get("shot").values()))
-        ))
+            shot.get("shot").get("target_x"),
+            shot.get("shot").get("target_y"),
+            ))
 
+            
         file.write("case(c{}, [{}], s{}).\n".format(
             case_index,
             ",".join(new_ids),
